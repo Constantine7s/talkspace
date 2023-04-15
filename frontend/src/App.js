@@ -6,7 +6,6 @@ import { ChatPage } from './pages/ChatPage'
 function App() {
   return (
     <div className="App">
-      <h1>Hello world</h1>
       <Route path="/" component={Homepage} exact/>
       <Route path="/chats" component={ChatPage}/>
     </div>
