@@ -3,12 +3,11 @@ import mongoose from 'mongoose';
 const chatModel = mongoose.Schema(
   {
     chatName: {
-      type: 'string',
-      required: true,
+      type: String,
       trim: true,
     },
     isGroupChat: {
-      type: 'boolean',
+      type: Boolean,
       default: false,
     },
     users: [
