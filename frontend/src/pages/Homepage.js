@@ -1,4 +1,6 @@
 import React from 'react';
+import Signup from '../components/Auth/Signup';
+import Login from '../components/Auth/Login';
 import {
   Box,
   Container,
@@ -32,14 +34,18 @@ export const Homepage = () => {
         </Text>
       </Box>
       <Box p={4} bg="whitesmoke" w="100%" borderRadius="5px">
-        <Tabs  isFitted variant="soft-rounded">
+        <Tabs isFitted variant="soft-rounded">
           <TabList mb="1em">
             <Tab>Login</Tab>
             <Tab>Sign Up</Tab>
           </TabList>
           <TabPanels>
-            <TabPanel>Login</TabPanel>
-            <TabPanel>Sign Up</TabPanel>
+            <TabPanel>
+              <Login />
+            </TabPanel>
+            <TabPanel>
+              <Signup />
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </Box>
