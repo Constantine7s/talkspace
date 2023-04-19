@@ -31,7 +31,7 @@ const Login = () => {
             }}
           />
         </FormControl>
-        <FormControl id='password'>
+        <FormControl id="password">
           <FormLabel>Password</FormLabel>
           <InputGroup>
             <Input
@@ -55,6 +55,17 @@ const Login = () => {
           onClick={handleSubmit}
         >
           Login
+        </Button>
+        <Button
+          width="100%"
+          style={{ marginTop: 25 }}
+          onClick={() => {
+            setEmail('guest@example.com');
+            setPassword('guest123');
+            handleSubmit();
+          }}
+        >
+          Continue as Guest
         </Button>
       </VStack>
     </div>
