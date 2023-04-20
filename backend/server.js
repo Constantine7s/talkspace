@@ -1,25 +1,22 @@
 const express = require('express');
 const app = express();
-require('dotenv').config();
+const dotenv = require('dotenv')
 const cors = require('cors');
 const port = process.env.PORT || 8000;
+const userRoutes = require('./routes/userRoutes')
+const connectDB = require('./config/db');
+
+dotenv.config()
+connectDB()
 
 app.use(cors());
-
-const chats = require('./data');
+app.use(express.json())
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
-app.get('/api/chat', (req, res) => {
-  res.send(chats);
-});
-
-app.get('/api/chat/:id', (req, res) => {
-  const chat = chats.find((c) => c._id === req.params.id);
-  res.send(chat);
-});
+app.use('/api/user', userRoutes)
 
 app.listen(port, () => {
   console.log('Your server is single and ready to mingle at port ' + port);
