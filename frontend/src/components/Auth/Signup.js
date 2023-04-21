@@ -7,7 +7,10 @@ import {
   InputGroup,
   InputRightElement,
   Button,
+  useToast,
 } from '@chakra-ui/react';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 const Signup = () => {
   const [name, setName] = useState();
@@ -16,10 +19,111 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState();
   const [pic, setPic] = useState();
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  const history = useHistory();
 
   const handleShow = () => setShow(!show);
-  const uploadPic = (pic) => {};
-  const handleSubmit = () => {};
+
+  const uploadPic = (pic) => {
+    setLoading(true);
+    if (pic === undefined) {
+      toast({
+        title: 'Please select an image',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      setLoading(false);
+      return;
+    }
+    if (pic.type === 'image/jpeg' || pic.type === 'image/png') {
+      const data = new FormData();
+      data.append('file', pic);
+      data.append('upload_preset', 'TalkSpace');
+      data.append('cloud_name', 'dq5xpjv2u');
+      fetch('https://api.cloudinary.com/v1_1/dq5xpjv2u/image/upload', {
+        method: 'post',
+        body: data,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setPic(data.url.toString());
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    } else {
+      toast({
+        title: 'Please select an image',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      setLoading(false);
+      return;
+    }
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    if (!name || !password || !email || !confirmPassword) {
+      toast({
+        title: 'Please fill in all required information',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      setLoading(false);
+    } else if (password !== confirmPassword) {
+      toast({
+        title: 'Passwords do not match',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      setLoading(false);
+    }
+    try {
+      const config = {
+        headers: {
+          'Content-type': 'application/json',
+        },
+      };
+      const data = await axios.post(
+        '/api/user/',
+        { name, email, password, pic },
+        config
+      );
+      toast({
+        title: 'Registration Successful',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      localStorage.setItem('userInfo', JSON.stringify(data));
+
+      setLoading(false);
+      history.push('/chats');
+    } catch (error) {
+      toast({
+        title: 'Unexpected error',
+        description: error.response.data.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -85,7 +189,7 @@ const Signup = () => {
             type="file"
             accept="image/*"
             p={1.5}
-            onClick={(e) => uploadPic(e.target.files[0])}
+            onChange={(e) => uploadPic(e.target.files[0])}
           />
         </FormControl>
         <Button
@@ -93,8 +197,8 @@ const Signup = () => {
           width="100%"
           style={{ marginTop: 25 }}
           onClick={handleSubmit}
+          isLoading={loading}
         >
-          {' '}
           Sign Up
         </Button>
       </VStack>
