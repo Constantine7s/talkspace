@@ -80,6 +80,7 @@ const Signup = () => {
         position: 'top-right',
       });
       setLoading(false);
+      return;
     } else if (password !== confirmPassword) {
       toast({
         title: 'Passwords do not match',
@@ -89,6 +90,7 @@ const Signup = () => {
         position: 'top-right',
       });
       setLoading(false);
+      return;
     }
     try {
       const config = {

@@ -26,6 +26,7 @@ const Login = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
+
     if (!password || !email) {
       toast({
         title: 'Please fill in all required information',
@@ -37,38 +38,43 @@ const Login = () => {
       setLoading(false);
       return;
     }
+
     try {
-        const config = {
-          headers: {
-            'Content-type': 'application/json',
-          },
-        };
-        const data = await axios.post(
-          '/api/user/login',
-          { email, password },
-          config
-        );
-        toast({
-          title: 'Login Successful',
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-          position: 'top-right',
-        });
-        localStorage.setItem('userInfo', JSON.stringify(data));
-        setLoading(false);
-        history.push('/chats');
+      const config = {
+        headers: {
+          'Content-type': 'application/json',
+        },
+      };
+      const data = await axios.post(
+        '/api/user/login/',
+        { email, password },
+        config
+      );
+
+      toast({
+        title: 'Login Successful',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+
+      localStorage.setItem('userInfo', JSON.stringify(data));
+
+      setLoading(false);
+
+      history.push('/chats');
     } catch (error) {
-        toast({
-          title: 'Unexpected error',
-          description: error.response.data.message,
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-          position: 'top-right',
-        });
-        setLoading(false);
-      }
+      toast({
+        title: 'Unexpected error',
+        description: error.response.data.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+      setLoading(false);
+    }
   };
 
   return (
@@ -78,6 +84,7 @@ const Login = () => {
           <FormLabel>Email</FormLabel>
           <Input
             placeholder="Enter your email"
+            value={email}
             onChange={(e) => {
               setEmail(e.target.value);
             }}
@@ -88,6 +95,7 @@ const Login = () => {
           <InputGroup>
             <Input
               placeholder="Enter your password"
+              value={password}
               type={show ? 'text' : 'password'}
               onInput={(e) => {
                 setPassword(e.target.value);
