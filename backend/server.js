@@ -4,6 +4,7 @@ const dotenv = require('dotenv')
 const cors = require('cors');
 const port = process.env.PORT || 8000;
 const userRoutes = require('./routes/userRoutes')
+const chatRoutes = require('./routes/chatRoutes')
 const connectDB = require('./config/db');
 const {errorHandler, notFound} = require('./middleware/errorMiddleware')
 
