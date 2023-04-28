@@ -1,12 +1,13 @@
 const asyncHandler = require('express-async-handler');
 const Chat = require('../models/chatModel');
+const User = require('../models/userModel');
 
 const accessChat = asyncHandler(async (req, res) => {
   const { userId } = req.body;
 
   if (!userId) {
     res.status(400);
-    throw new Error('UserUd params not sent with the request');
+    throw new Error('UserId params not sent with the request');
   }
 
   let isChat = await Chat.find({
@@ -19,15 +20,12 @@ const accessChat = asyncHandler(async (req, res) => {
     .populate('users', '-password')
     .populate('latestMessage');
 
-  isChat = await User.populate(isChat, {
-    path: 'latestMessage.sender',
-    select: 'name pic email',
-  });
+  let chatData;
 
   if (isChat.length > 0) {
     res.send(isChat[0]);
   } else {
-    let chatData = {
+    chatData = {
       chatName: 'sender',
       isGroupChat: false,
       users: [req.user._id, userId],
@@ -35,11 +33,17 @@ const accessChat = asyncHandler(async (req, res) => {
   }
 
   try {
-    const createdChat = await Chat.craete(chatData);
-    const fullChat = await Chat.findOne({ _id: createdChat._id }).populate(
-      'users',
-      '-password'
-    );
+    const createdChat = await Chat.create(chatData);
+    const fullChat = await Chat.findOne({ _id: createdChat._id })
+      .populate('users', '-password')
+      .sort({ updatedAt: -1 })
+      .then(
+        async (result) =>
+          (result = await User.populate(isChat, {
+            path: 'latestMessage.sender',
+            select: 'name pic email',
+          }))
+      );
     res.status(200).send(fullChat);
   } catch (error) {
     res.status(400);
@@ -47,4 +51,24 @@ const accessChat = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { accessChat };
+const fetchChats = asyncHandler(async (req, res) => {
+  try {
+    let allChats = await Chat.find({
+      users: { $elemMatch: { $eq: req.user._id } },
+    })
+      .populate('users', '-password')
+      .populate('groupAdmin', '-password');
+
+    allChats = await User.populate(allChats, {
+      path: 'latestMessage.sender',
+      select: 'name pic email',
+    });
+
+    res.status(200).send(allChats);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+module.exports = { accessChat, fetchChats };
