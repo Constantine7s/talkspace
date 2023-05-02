@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import Signup from '../components/Auth/Signup';
-import Login from '../components/Auth/Login';
+import Signup from '../components/auth/Signup';
+import Login from '../components/auth/Login';
 import {
   Box,
   Container,
@@ -18,8 +18,7 @@ export const Homepage = () => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('userInfo'));
-
-    if (!user) history.push('/chats');
+    if (user) history.push('/chats');
   }, [history]);
 
   return (
