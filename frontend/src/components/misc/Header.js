@@ -4,15 +4,19 @@ import {
   Button,
   Menu,
   MenuButton,
+  MenuDivider,
   MenuList,
+  MenuItem,
   Text,
 } from '@chakra-ui/react';
 import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import React, { useState } from 'react';
 import { ChatState } from '../../context/ChatProvider';
+import ProfileModal from './ProfileModal';
 
-const SideMenu = () => {
-  const { user } = ChatState(); 
+const Header = () => {
+  const { user } = ChatState();
+  console.log(user);
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,8 +51,20 @@ const SideMenu = () => {
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-              <Avatar size="sm" cursor="pointer" name={user.name} />
+              <Avatar
+                size="sm"
+                cursor="pointer"
+                name={user.name}
+                src={user.pic}
+              />
             </MenuButton>
+            <MenuList>
+              <ProfileModal user={user}>
+                <MenuItem>My Profile</MenuItem>
+              </ProfileModal>
+              <MenuDivider />
+              <MenuItem>Logout</MenuItem>
+            </MenuList>
           </Menu>
         </div>
       </Box>
@@ -56,4 +72,4 @@ const SideMenu = () => {
   );
 };
 
-export default SideMenu;
+export default Header;
