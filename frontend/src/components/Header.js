@@ -27,7 +27,7 @@ import ChatLoading from './misc/ChatLoading';
 import UserListItem from './misc/UserListItem';
 
 const Header = () => {
-  const { user } = ChatState();
+  const { user, setSelectedChat, chats, setChats } = ChatState();
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -76,7 +76,30 @@ const Header = () => {
     }
   };
 
-  const startChat = (userId) => {};
+  const startChat = async (userId) => {
+    try {
+      setLoadingChat(true);
+      const config = {
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post('/api/chat', { userId }, config);
+      setSelectedChat(data);
+      setLoadingChat(false);
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Couldn't get the chat",
+        status: 'error',
+        isClosable: 'true',
+        duration: '2000',
+        position: 'top-left',
+      });
+      console.error(error);
+    }
+  };
 
   const handleLogut = () => {
     localStorage.removeItem('userInfo');
