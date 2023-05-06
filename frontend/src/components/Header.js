@@ -70,10 +70,13 @@ const Header = () => {
     }
   };
 
-  const startChat = (userId) => {
-    
-  }
-  
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      handleSearch();
+    }
+  };
+
+  const startChat = (userId) => {};
 
   const handleLogut = () => {
     localStorage.removeItem('userInfo');
@@ -138,13 +141,20 @@ const Header = () => {
                 marginRight={2}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
               <Button onClick={handleSearch}>Search</Button>
             </Box>
             {loading ? (
               <ChatLoading />
             ) : (
-              searchResult.map((user) => <UserListItem key={user._id} user={user} handelChat={() => startChat(user._id)}/>)
+              searchResult.map((user) => (
+                <UserListItem
+                  key={user._id}
+                  user={user}
+                  handleFunction={() => startChat(user._id)}
+                />
+              ))
             )}
           </DrawerBody>
         </DrawerContent>
