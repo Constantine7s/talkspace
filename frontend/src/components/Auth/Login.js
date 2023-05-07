@@ -63,6 +63,8 @@ const Login = () => {
 
       setLoading(false);
       history.push('/chats');
+      window.location.reload();
+
     } catch (error) {
       toast({
         title: 'Unexpected error',
@@ -123,10 +125,9 @@ const Login = () => {
           onClick={() => {
             setEmail('guest@example.com');
             setPassword('guest123');
-            handleSubmit();
           }}
         >
-          Continue as Guest
+          Get Guest User Credentials
         </Button>
       </VStack>
     </div>

@@ -16,6 +16,7 @@ import {
   DrawerBody,
   Input,
   useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import React, { useState } from 'react';
@@ -62,11 +63,11 @@ const Header = () => {
       toast({
         title: "Couldn't get the search result",
         status: 'error',
+        description: `${error.message}`,
         isClosable: 'true',
         duration: '2000',
         position: 'top-left',
       });
-      console.log(error.message);
     }
   };
 
@@ -85,7 +86,13 @@ const Header = () => {
           Authorization: `Bearer ${user.token}`,
         },
       };
+
       const { data } = await axios.post('/api/chat', { userId }, config);
+
+      if (!chats.find((chat) => chat._id === data._id)) {
+        setChats([data, ...chats]);
+      }
+
       setSelectedChat(data);
       setLoadingChat(false);
       onClose();
@@ -93,17 +100,19 @@ const Header = () => {
       toast({
         title: "Couldn't get the chat",
         status: 'error',
+        description: `${error.message}`,
         isClosable: 'true',
         duration: '2000',
         position: 'top-left',
       });
-      console.error(error);
     }
   };
 
   const handleLogut = () => {
     localStorage.removeItem('userInfo');
     history.push('/');
+    window.location.reload();
+
   };
 
   return (
@@ -179,6 +188,7 @@ const Header = () => {
                 />
               ))
             )}
+            {loadingChat && <Spinner marginLeft="auto" display="flex" />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
