@@ -1,4 +1,5 @@
-import { Box, CloseButton } from '@chakra-ui/react';
+import { CloseIcon } from '@chakra-ui/icons';
+import { Box } from '@chakra-ui/react';
 import React from 'react';
 
 const UserNameTag = ({ user, handleFunction }) => {
@@ -10,13 +11,15 @@ const UserNameTag = ({ user, handleFunction }) => {
       margin={1}
       marginBottom={2}
       fontSize={12}
-      colorScheme="blue"
+      backgroundColor="#486989"
+      _hover={{ backgroundColor: 'crimson' }}
+      color="white"
       cursor="pointer"
       variant="solid"
       onClick={handleFunction}
     >
       {user.name}
-      {CloseButton}
+      <CloseIcon paddingLeft={1} />
     </Box>
   );
 };
