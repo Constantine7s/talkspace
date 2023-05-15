@@ -44,6 +44,7 @@ const MyChats = () => {
       alignItems="center"
       flexDir="column"
       padding={3}
+      marginRight={3}
       bg="white"
       width={{ base: '100%', md: '30%' }}
       borderRadius="5px"
