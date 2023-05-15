@@ -7,8 +7,8 @@ const router = express.Router();
 router.route('/').get(protect, fetchChats);
 router.route('/').post(protect, accessChat);
 router.route('/group').post(protect, createGroupChat);
-router.route('/renamegroup').put(protect, renameGroup);
-router.route('/addtogroup').put(protect, addToGroup);
-router.route('/romvefromgroup').put(protect, removeFromGroup);
+router.route('/rename').put(protect, renameGroup);
+router.route('/groupadd').put(protect, addToGroup);
+router.route('/groupremove').put(protect, removeFromGroup);
 
 module.exports =  router;

@@ -7,7 +7,7 @@ import ChatLoading from './misc/ChatLoading';
 import { getSender } from './config/GetSender';
 import GroupChatModal from './misc/GroupChatModal';
 
-const MyChats = () => {
+const MyChats = ({ fetchAgain  }) => {
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
 
   const toast = useToast();
@@ -36,7 +36,7 @@ const MyChats = () => {
 
   useEffect(() => {
     fetchChats();
-  }, []);
+  }, [fetchAgain]);
 
   return (
     <Box
