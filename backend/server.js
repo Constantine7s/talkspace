@@ -26,6 +26,18 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 app.use(notFound);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log('Your server is single and ready to mingle at port ' + port);
+});
+
+const io = require('socket.io')(server, {
+  pingTimeout: 60000,
+  cors: { origin: 'http://localhost:3000' },
+});
+
+io.on('connection', (socket) => {
+  socket.on('setup', (userData) => {
+    socket.join(userData._id);
+    socket.emit('connected');
+  });
 });
