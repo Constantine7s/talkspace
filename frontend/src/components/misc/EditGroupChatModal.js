@@ -21,7 +21,7 @@ import UserNameTag from './UserNameTag';
 import axios from 'axios';
 import UserListItem from './UserListItem';
 
-const EditGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
+const EditGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -123,6 +123,7 @@ const EditGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
 
       removedUser._id === user._id ? setSelectedChat() : setSelectedChat(data);
       setFetchAgain(!fetchAgain);
+      fetchMessages();
       setLoading(false);
     } catch (error) {
       console.log(error.message);

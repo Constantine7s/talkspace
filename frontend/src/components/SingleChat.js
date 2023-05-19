@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChatState } from '../context/ChatProvider';
 import {
   Box,
@@ -14,6 +14,7 @@ import { getSender, getSenderFull } from './config/GetSender';
 import ProfileModal from './misc/ProfileModal';
 import EditGroupChatModal from './misc/EditGroupChatModal';
 import axios from 'axios';
+import ScrollableChat from './ScrollableChat';
 
 function SingleChat({ fetchAgain, setFetchAgain }) {
   const { user, selectedChat, setSelectedChat } = ChatState();
@@ -21,6 +22,38 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
   const toast = useToast();
+
+  const fetchMesseges = async () => {
+    if (!selectedChat) return;
+
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      setLoading(true);
+      const { data } = await axios.get(
+        `/api/message/${selectedChat._id}`,
+        config
+      );
+      setMessages(data);
+      setLoading(false);
+    } catch (error) {
+      toast({
+        title: 'Failed to load the messages',
+        status: 'error',
+        description: `${error.message}`,
+        isClosable: 'true',
+        duration: '3000',
+        position: 'top-left',
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchMesseges();
+  }, [selectedChat]);
 
   const sendMessage = async (e) => {
     if (e.key === 'Enter' && newMessage) {
@@ -31,6 +64,9 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
             Authorization: `Bearer ${user.token}`,
           },
         };
+
+        setNewMessage('');
+
         const { data } = await axios.post(
           '/api/message',
           {
@@ -39,8 +75,8 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
           },
           config
         );
-        setNewMessage('');
-        setMessages([...messages, data])
+
+        setMessages([...messages, data]);
       } catch (error) {
         toast({
           title: 'Failed to send the message',
@@ -79,7 +115,11 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
             {selectedChat.isGroupChat ? (
               <>
                 {selectedChat.chatName}
-                <EditGroupChatModal setFetchAgain={setFetchAgain} />
+                <EditGroupChatModal
+                  setFetchAgain={setFetchAgain}
+                  fetchAgain={fetchAgain}
+                  fetchMesseges={fetchMesseges}
+                />
               </>
             ) : (
               <>
@@ -103,7 +143,16 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
             {loading ? (
               <Spinner size="xl" alignSelf="center" margin="auto" />
             ) : (
-              <></>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflowY: 'scroll',
+                  scrollbarWidth: 'none',
+                }}
+              >
+                <ScrollableChat messages={messages} />
+              </div>
             )}
             <FormControl onKeyDown={sendMessage} isRequired marginTop={3}>
               <Input
