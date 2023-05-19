@@ -1,13 +1,62 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChatState } from '../context/ChatProvider';
-import { Box, IconButton, Text } from '@chakra-ui/react';
+import {
+  Box,
+  FormControl,
+  IconButton,
+  Input,
+  Spinner,
+  Text,
+  useToast,
+} from '@chakra-ui/react';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 import { getSender, getSenderFull } from './config/GetSender';
 import ProfileModal from './misc/ProfileModal';
 import EditGroupChatModal from './misc/EditGroupChatModal';
+import axios from 'axios';
 
 function SingleChat({ fetchAgain, setFetchAgain }) {
   const { user, selectedChat, setSelectedChat } = ChatState();
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [newMessage, setNewMessage] = useState();
+  const toast = useToast();
+
+  const sendMessage = async (e) => {
+    if (e.key === 'Enter' && newMessage) {
+      try {
+        const config = {
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${user.token}`,
+          },
+        };
+        const { data } = await axios.post(
+          '/api/message',
+          {
+            content: newMessage,
+            chatId: selectedChat._id,
+          },
+          config
+        );
+        setNewMessage('');
+        setMessages([...messages, data])
+      } catch (error) {
+        toast({
+          title: 'Failed to send the message',
+          status: 'error',
+          description: `${error.message}`,
+          isClosable: 'true',
+          duration: '3000',
+          position: 'top-left',
+        });
+      }
+    }
+  };
+
+  const handleTyping = (e) => {
+    setNewMessage(e.target.value);
+  };
 
   return (
     <>
@@ -30,7 +79,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
             {selectedChat.isGroupChat ? (
               <>
                 {selectedChat.chatName}
-                <EditGroupChatModal setFetchAgain={setFetchAgain}/>
+                <EditGroupChatModal setFetchAgain={setFetchAgain} />
               </>
             ) : (
               <>
@@ -50,7 +99,22 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
             overflowY="hidden"
             borderRadius="5px"
             margin="6px"
-          ></Box>
+          >
+            {loading ? (
+              <Spinner size="xl" alignSelf="center" margin="auto" />
+            ) : (
+              <></>
+            )}
+            <FormControl onKeyDown={sendMessage} isRequired marginTop={3}>
+              <Input
+                variant="outline"
+                placeholder="Enter a message..."
+                background="#E0E0E0"
+                onChange={handleTyping}
+                value={newMessage}
+              />
+            </FormControl>
+          </Box>
         </>
       ) : (
         <Box
