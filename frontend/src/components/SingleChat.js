@@ -24,7 +24,8 @@ let socket = io(ENDPOINT);
 let selectedChatCompare;
 
 function SingleChat({ fetchAgain, setFetchAgain }) {
-  const { user, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat, setSelectedChat, notification, setNotification } =
+    ChatState();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
@@ -89,7 +90,22 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
         !selectedChatCompare ||
         selectedChatCompare._id !== newMessage.chat._id
       ) {
-        console.log('notification', selectedChatCompare, selectedChat);
+        if (!notification.includes(newMessage)) {
+          setNotification([newMessage, ...notification]);
+          setFetchAgain(!fetchAgain);
+          let id = 'test-toast';
+          if (!toast.isActive(id)) {
+            toast({
+              id,
+              title: 'You got a new message',
+              status: 'info',
+              isClosable: 'true',
+              variant: 'left-accent',
+              duration: '3000',
+              position: 'top-right',
+            });
+          }
+        }
       } else {
         console.log(newMessage);
         setMessages([...messages, newMessage]);

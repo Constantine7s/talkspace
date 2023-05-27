@@ -26,9 +26,18 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import ChatLoading from './misc/ChatLoading';
 import UserListItem from './misc/UserListItem';
+import { getSender } from './config/GetSender';
+import NotificationBadge, { Effect } from 'react-notification-badge'
 
 const Header = () => {
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+  const {
+    user,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -112,7 +121,6 @@ const Header = () => {
     localStorage.removeItem('userInfo');
     history.push('/');
     window.location.reload();
-
   };
 
   return (
@@ -137,10 +145,26 @@ const Header = () => {
         </Text>
         <div>
           <Menu>
-            <MenuButton p={1}>
+            <MenuButton padding={1}>
+              <NotificationBadge count={notification.length} effect={Effect.SCALE}/>
               <BellIcon boxSize={6} />
             </MenuButton>
-            {/* <MenuList></MenuList> */}
+            <MenuList padding={4}>
+              {!notification.length && 'No new messages'}
+              {notification.map((notif) => (
+                <MenuItem
+                  key={notif._id}
+                  onClick={() => {
+                    setSelectedChat(notif.chat);
+                    setNotification(notification.filter((n) => n.chat.chatName !== notif.chat.chatName));
+                  }}
+                >
+                  {notif.chat.isGroupChat
+                    ? `New message in ${notif.chat.chatName}`
+                    : `New message from ${getSender(user, notif.chat.users)}`}
+                </MenuItem>
+              ))}
+            </MenuList>
           </Menu>
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
