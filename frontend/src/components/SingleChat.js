@@ -231,7 +231,8 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
                   <Lottie
                     options={defaultOptions}
                     width={70}
-                    style={{ margin: 10 }}
+                    height={50}
+                    style={{ margin: 5 }}
                   />
                 ) : (
                   <div />
